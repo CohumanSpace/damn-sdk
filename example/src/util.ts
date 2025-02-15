@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { ApiClient } from '@digimon/damn-sdk';
+import { ApiClient } from '@damn-fun/sdk';
 
 export function getApiClient() {
   const baseUrl = process.env.API_BASE_URL!;

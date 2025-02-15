@@ -1,5 +1,5 @@
 {
-  "name": "@digimon/damn-sdk",
+  "name": "@damn-fun/sdk",
   "version": "0.0.1",
   "description": "damn sdk",
   "main": "./dist/index.cjs",
