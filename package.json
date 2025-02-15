@@ -1,7 +1,7 @@
 {
   "name": "@damn-fun/sdk",
-  "version": "0.0.1",
-  "description": "damn sdk",
+  "version": "0.0.2",
+  "description": "DAMN.FUN's NodeJS Server SDK for deploying AI-native games powered Digimon Engine.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "typings": "./dist/index.d.ts",
