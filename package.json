@@ -34,7 +34,6 @@
     "typescript": "^5.7.3"
   },
   "files": [
-    "dist",
-    "README.md"
+    "dist"
   ]
 }
