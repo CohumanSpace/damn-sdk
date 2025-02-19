@@ -30,14 +30,14 @@ import {
   UpdateMusicResponse,
   UploadResponse,
 } from './types';
-import type { ReadStream } from 'fs';
+import { type ReadStream } from 'fs';
 
 export class ApiClient extends BaseClient {
   constructor({ baseUrl, apiKey, fetch }: ClientOptions) {
     super({ baseUrl, apiKey, fetch });
   }
 
-  public upload(file: string | Buffer | ReadStream, fileName: string) {
+  public upload(file: Buffer | ReadStream, fileName: string) {
     const form = new FormData();
     form.append('file', file, fileName);
     return this.post<UploadResponse>('/upload', form, form.getHeaders());

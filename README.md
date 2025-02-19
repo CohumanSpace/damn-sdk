@@ -29,7 +29,7 @@ const client = new ApiClient({ baseUrl, apiKey });
 ### Upload assets(png, jpg, mp3, etc.)
 
 ```typescript
-client.upload('./damn-logo.png', 'damn-logo.png');
+client.upload(createReadStream('./damn-logo.png'), 'damn-logo.png');
 ```
 
 ### Create map

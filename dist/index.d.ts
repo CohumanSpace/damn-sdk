@@ -237,7 +237,7 @@ declare abstract class BaseClient {
 
 declare class ApiClient extends BaseClient {
     constructor({ baseUrl, apiKey, fetch }: ClientOptions);
-    upload(file: string | Buffer | ReadStream, fileName: string): Promise<UploadResponse>;
+    upload(file: Buffer | ReadStream, fileName: string): Promise<UploadResponse>;
     getMusicList(): Promise<MusicListResponse>;
     createMusic(params: CreateMusicRequestParams): Promise<CreateOrUpdateResourceResponse>;
     updateMusic(params: UpdateMusicRequestParams): Promise<CreateOrUpdateResourceResponse>;
