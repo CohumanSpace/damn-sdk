@@ -1,4 +1,3 @@
-import FormData from 'form-data';
 import { BaseClient, ClientOptions } from './base';
 import {
   AgentListResponse,
@@ -30,17 +29,16 @@ import {
   UpdateMusicResponse,
   UploadResponse,
 } from './types';
-import { type ReadStream } from 'fs';
 
 export class ApiClient extends BaseClient {
-  constructor({ baseUrl, apiKey, fetch }: ClientOptions) {
-    super({ baseUrl, apiKey, fetch });
+  constructor({ baseUrl, apiKey }: ClientOptions) {
+    super({ baseUrl, apiKey });
   }
 
-  public upload(file: Buffer | ReadStream, fileName: string) {
+  public upload(file: Blob | File, fileName: string) {
     const form = new FormData();
     form.append('file', file, fileName);
-    return this.post<UploadResponse>('/upload', form, form.getHeaders());
+    return this.post<UploadResponse>('/upload', form);
   }
 
   public getMusicList() {

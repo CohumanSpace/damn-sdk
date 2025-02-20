@@ -29,7 +29,9 @@ const client = new ApiClient({ baseUrl, apiKey });
 ### Upload assets(png, jpg, mp3, etc.)
 
 ```typescript
-client.upload(createReadStream('./damn-logo.png'), 'damn-logo.png');
+const fileBuffer = fs.readFileSync('damn-logo.png');
+const blob = new Blob([fileBuffer], { type: 'image/png' });
+const uploadRes = await getApiClient().upload(blob, 'damn-logo.png');
 ```
 
 ### Create map

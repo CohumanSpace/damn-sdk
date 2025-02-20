@@ -1,28 +1,10 @@
 'use strict';
 
-var FormData = require('form-data');
-var nf = require('node-fetch');
-
-function _interopNamespaceDefault(e) {
-  var n = Object.create(null);
-  if (e) {
-    Object.keys(e).forEach(function (k) {
-      if (k !== 'default') {
-        var d = Object.getOwnPropertyDescriptor(e, k);
-        Object.defineProperty(n, k, d.get ? d : {
-          enumerable: true,
-          get: function () { return e[k]; }
-        });
-      }
-    });
-  }
-  n.default = e;
-  return Object.freeze(n);
-}
-
-var nf__namespace = /*#__PURE__*/_interopNamespaceDefault(nf);
+var axios = require('axios');
 
 var __defProp$1 = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropSymbols$1 = Object.getOwnPropertySymbols;
 var __hasOwnProp$1 = Object.prototype.hasOwnProperty;
 var __propIsEnum$1 = Object.prototype.propertyIsEnumerable;
@@ -38,6 +20,7 @@ var __spreadValues$1 = (a, b) => {
     }
   return a;
 };
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __async = (__this, __arguments, generator) => {
   return new Promise((resolve, reject) => {
     var fulfilled = (value) => {
@@ -59,10 +42,10 @@ var __async = (__this, __arguments, generator) => {
   });
 };
 class BaseClient {
-  constructor({ baseUrl, apiKey, fetch }) {
+  constructor({ baseUrl, apiKey }) {
     this.baseUrl = baseUrl;
     this.apiKey = apiKey;
-    this.fetch = fetch != null ? fetch : nf__namespace.default;
+    this.axios = axios.create({ baseURL: this.baseUrl });
   }
   buildUrl(endpoint, params) {
     const url = new URL(endpoint, this.baseUrl);
@@ -73,33 +56,17 @@ class BaseClient {
   }
   request(_0) {
     return __async(this, arguments, function* (endpoint, options = {}) {
-      const { method = "GET", body, headers = {}, params } = options;
+      const { method = "GET", body, params } = options;
       const url = this.buildUrl(endpoint, params);
-      const config = {
-        method,
-        headers: __spreadValues$1({
-          "X-API-Key": this.apiKey
-        }, headers)
-      };
-      if (body) {
-        if (body instanceof FormData) {
-          config.body = body;
-        } else {
-          config.body = JSON.stringify(body);
-          config.headers = __spreadValues$1({ "Content-Type": "application/json" }, config.headers);
-        }
+      let headers = __spreadValues$1({
+        "X-API-Key": this.apiKey
+      }, options.headers);
+      if (body && body instanceof FormData) {
+        headers = __spreadProps(__spreadValues$1({}, headers), { "Content-Type": "multipart/form-data" });
       }
       try {
-        const response = yield this.fetch(url, config);
-        if (!response.ok) {
-          console.log(yield response.text());
-          throw new Error(`Request failed with status ${response.status}`);
-        }
-        const contentType = response.headers.get("Content-Type");
-        if (contentType && contentType.includes("application/json")) {
-          return response.json();
-        }
-        return response.text();
+        const response = yield this.axios.request({ method, headers, url, data: body });
+        return response.data;
       } catch (error) {
         throw error;
       }
@@ -139,8 +106,8 @@ var __spreadValues = (a, b) => {
   return a;
 };
 class ApiClient extends BaseClient {
-  constructor({ baseUrl, apiKey, fetch }) {
-    super({ baseUrl, apiKey, fetch });
+  constructor({ baseUrl, apiKey }) {
+    super({ baseUrl, apiKey });
     this.gameData = {
       getWorldStatus: (gameId) => {
         return this.gameServiceApi(gameId, "getWorldStatus");
@@ -165,7 +132,7 @@ class ApiClient extends BaseClient {
   upload(file, fileName) {
     const form = new FormData();
     form.append("file", file, fileName);
-    return this.post("/upload", form, form.getHeaders());
+    return this.post("/upload", form);
   }
   getMusicList() {
     return this.get("/music");

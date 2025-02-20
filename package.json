@@ -1,6 +1,6 @@
 {
   "name": "@damn-fun/sdk",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "DAMN.FUN's NodeJS Server SDK for deploying AI-native games powered Digimon Engine.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -22,12 +22,9 @@
     "node": ">=18.19"
   },
   "dependencies": {
-    "form-data": "^4.0.1",
-    "node-fetch": "^2.7.0"
+    "axios": "^1.7.9"
   },
   "devDependencies": {
-    "@types/node": "^22.13.4",
-    "@types/node-fetch": "^2.6.12",
     "rollup": "^4.34.7",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-esbuild": "^6.2.0",

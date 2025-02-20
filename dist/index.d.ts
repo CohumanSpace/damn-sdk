@@ -1,4 +1,4 @@
-import { ReadStream } from 'fs';
+import { AxiosInstance } from 'axios';
 
 type BaseResource = {
     _creationTime: number;
@@ -215,17 +215,15 @@ type GetHumanPlayerListResponse = PaginationResult<GameData.HumanPlayer>;
 type GetConversationListResponse = PaginationResult<GameData.Conversation>;
 type GetMessageListResponse = GameData.Message[];
 
-type Fetch = (url: RequestInfo, init?: RequestInit) => Promise<Response>;
 interface ClientOptions {
     baseUrl: string;
     apiKey: string;
-    fetch?: Fetch;
 }
 declare abstract class BaseClient {
     baseUrl: string;
     apiKey: string;
-    private fetch;
-    constructor({ baseUrl, apiKey, fetch }: ClientOptions);
+    axios: AxiosInstance;
+    constructor({ baseUrl, apiKey }: ClientOptions);
     private buildUrl;
     private request;
     get<T>(endpoint: string, params?: Record<string, string | number>): Promise<T>;
@@ -236,8 +234,8 @@ declare abstract class BaseClient {
 }
 
 declare class ApiClient extends BaseClient {
-    constructor({ baseUrl, apiKey, fetch }: ClientOptions);
-    upload(file: Buffer | ReadStream, fileName: string): Promise<UploadResponse>;
+    constructor({ baseUrl, apiKey }: ClientOptions);
+    upload(file: Blob | File, fileName: string): Promise<UploadResponse>;
     getMusicList(): Promise<MusicListResponse>;
     createMusic(params: CreateMusicRequestParams): Promise<CreateOrUpdateResourceResponse>;
     updateMusic(params: UpdateMusicRequestParams): Promise<CreateOrUpdateResourceResponse>;

@@ -1,12 +1,8 @@
-import FormData from 'form-data';
-import * as nf from 'node-fetch';
-
-export type Fetch = (url: RequestInfo, init?: RequestInit) => Promise<Response>;
+import axios, { AxiosInstance } from 'axios';
 
 export interface ClientOptions {
   baseUrl: string;
   apiKey: string;
-  fetch?: Fetch;
 }
 
 export interface RequestOptions {
@@ -19,11 +15,11 @@ export interface RequestOptions {
 export abstract class BaseClient {
   baseUrl: string;
   apiKey: string;
-  private fetch: Fetch;
-  constructor({ baseUrl, apiKey, fetch }: ClientOptions) {
+  axios: AxiosInstance;
+  constructor({ baseUrl, apiKey }: ClientOptions) {
     this.baseUrl = baseUrl;
     this.apiKey = apiKey;
-    this.fetch = fetch ?? (nf.default as unknown as Fetch);
+    this.axios = axios.create({ baseURL: this.baseUrl });
   }
 
   private buildUrl(endpoint: string, params?: Record<string, string | number>) {
@@ -35,41 +31,22 @@ export abstract class BaseClient {
   }
 
   private async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-    const { method = 'GET', body, headers = {}, params } = options;
+    const { method = 'GET', body, params } = options;
 
     const url = this.buildUrl(endpoint, params);
 
-    const config: RequestInit = {
-      method,
-      headers: {
-        'X-API-Key': this.apiKey,
-        ...headers,
-      },
-    };
+    let headers = {
+      'X-API-Key': this.apiKey,
+      ...options.headers,
+    } as Record<string, string>;
 
-    if (body) {
-      if (body instanceof FormData) {
-        config.body = body as any;
-      } else {
-        config.body = JSON.stringify(body);
-        config.headers = { 'Content-Type': 'application/json', ...config.headers };
-      }
+    if (body && body instanceof FormData) {
+      headers = { ...headers, 'Content-Type': 'multipart/form-data' };
     }
 
     try {
-      const response = await this.fetch(url, config as any);
-
-      if (!response.ok) {
-        console.log(await response.text());
-        throw new Error(`Request failed with status ${response.status}`);
-      }
-
-      const contentType = response.headers.get('Content-Type');
-      if (contentType && contentType.includes('application/json')) {
-        return response.json();
-      }
-
-      return response.text() as unknown as T;
+      const response = await this.axios.request({ method, headers, url, data: body });
+      return response.data as unknown as T;
     } catch (error) {
       throw error;
     }
